@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E607696242FB54B0087CBE1 /* LinkedListTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E607695242FB54B0087CBE1 /* LinkedListTest.swift */; };
+		0E6835422427CEEF00A81F48 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6835412427CEEF00A81F48 /* LinkedList.swift */; };
 		0E6BA8A5242756EA00201382 /* backpack.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E6BA89E242756EA00201382 /* backpack.png */; };
 		0E6BA8A6242756EA00201382 /* kyoto.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0E6BA89F242756EA00201382 /* kyoto.jpg */; };
 		0E6BA8A7242756EA00201382 /* ticket.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E6BA8A0242756EA00201382 /* ticket.png */; };
@@ -36,6 +38,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E607695242FB54B0087CBE1 /* LinkedListTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedListTest.swift; sourceTree = "<group>"; };
+		0E6835412427CEEF00A81F48 /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		0E6BA89E242756EA00201382 /* backpack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backpack.png; sourceTree = "<group>"; };
 		0E6BA89F242756EA00201382 /* kyoto.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = kyoto.jpg; sourceTree = "<group>"; };
 		0E6BA8A0242756EA00201382 /* ticket.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ticket.png; sourceTree = "<group>"; };
@@ -145,6 +149,7 @@
 				0E6BA88E24274E7C00201382 /* Resources */,
 				0EC12117241E0F2B0038A110 /* SampleCacheTests.swift */,
 				0EC12119241E0F2B0038A110 /* Info.plist */,
+				0E607695242FB54B0087CBE1 /* LinkedListTest.swift */,
 			);
 			path = SampleCacheTests;
 			sourceTree = "<group>";
@@ -154,6 +159,7 @@
 			children = (
 				0EC12123241E29320038A110 /* LRUImageCache.swift */,
 				0EA144B02425DD530070BA09 /* DiskCache.swift */,
+				0E6835412427CEEF00A81F48 /* LinkedList.swift */,
 			);
 			path = Cache;
 			sourceTree = "<group>";
@@ -266,6 +272,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E6835422427CEEF00A81F48 /* LinkedList.swift in Sources */,
 				0EA144AD2425D02A0070BA09 /* String+Extensions.swift in Sources */,
 				0EC12124241E29320038A110 /* LRUImageCache.swift in Sources */,
 				0EC12105241E0F290038A110 /* ViewController.swift in Sources */,
@@ -278,6 +285,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E607696242FB54B0087CBE1 /* LinkedListTest.swift in Sources */,
 				0EC12118241E0F2B0038A110 /* SampleCacheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
