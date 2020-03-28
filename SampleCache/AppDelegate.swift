@@ -15,8 +15,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        let cacheDir = DiskCache.cacheDirectory()
+        var cacheDir = DiskCache.cacheDirectory()
         print("cacheDir >>>", cacheDir)
+        cacheDir = (DiskCache.cacheDirectory() as NSString).appendingPathComponent("com.github.matsuda.SampleCache")
+        try? FileManager.default.removeItem(atPath: cacheDir)
         return true
     }
 }

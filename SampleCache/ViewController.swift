@@ -35,6 +35,11 @@ final class ViewController: UIViewController {
     @IBAction func tapButton2(_ sender: Any) {
         UIApplication.shared.perform(Selector(("_performMemoryWarning")))
     }
+
+    @IBAction func tapBarButton(_ sender: Any) {
+        guard let vc = storyboard?.instantiateViewController(withIdentifier: "ViewController") else { return }
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 extension ViewController {
@@ -56,7 +61,7 @@ extension ViewController {
         print("-----------<", #function, ">---------------")
         let url = URL(string: urlString)!
         URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
-            print("response.url:", response?.url)
+            print("response.url:", response?.url as Any)
             guard error == nil else { return }
             guard let data = data else { return }
             guard let image = UIImage(data: data) else { return }
