@@ -29,7 +29,6 @@ final class ViewController: UIViewController {
 
     @IBAction func tapButton(_ sender: Any) {
         let url = imageURLs.randomElement()!
-        print("md5 >>>", url.md5 as Any)
         fetchImage(with: url)
     }
 
@@ -40,7 +39,8 @@ final class ViewController: UIViewController {
 
 extension ViewController {
     func fetchImage(with urlString: String) {
-        print("urlString >>>", urlString)
+        print("-----------<", #function, ">---------------")
+        print("urlString:", urlString)
         DispatchQueue.global().async { [weak self] in
             if let image = self?.cache.image(forKey: urlString) {
                 DispatchQueue.main.async {
@@ -53,9 +53,10 @@ extension ViewController {
     }
 
     func requestImage(with urlString: String) {
+        print("-----------<", #function, ">---------------")
         let url = URL(string: urlString)!
         URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
-            print("response.url >>>", response?.url)
+            print("response.url:", response?.url)
             guard error == nil else { return }
             guard let data = data else { return }
             guard let image = UIImage(data: data) else { return }

@@ -22,14 +22,14 @@ class DiskCache {
         try? fm.createDirectory(atPath: cacheDir, withIntermediateDirectories: true, attributes: nil)
     }
 
-    func data(forKey key: String) -> Data? {
+    func get(forKey key: String) -> Data? {
         let path = (cacheDir as NSString).appendingPathComponent(key)
         guard fm.fileExists(atPath: path) else { return nil }
         guard let data = fm.contents(atPath: path) else { return nil }
         return data
     }
 
-    func setData(_ data: Data, forKey key: String) {
+    func set(_ data: Data, forKey key: String) {
         let path = (cacheDir as NSString).appendingPathComponent(key)
         if fm.fileExists(atPath: path) {
             try? fm.removeItem(atPath: path)

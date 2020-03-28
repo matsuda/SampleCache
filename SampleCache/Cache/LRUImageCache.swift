@@ -12,16 +12,17 @@ import UIKit
 final class LRUImageCache {
     private let concurrentQueue = DispatchQueue(label: "com.github.matsuda.SampleCache", qos: .default, attributes: .concurrent)
     private let limitCount: Int
-    private let memoryCache: NSCache<NSString, UIImage>
-    private let diskCache: DiskCache
-    private var cachedKeysInMemory: [String] = []
+    private let diskCache: DiskCache?
+    private var memoryCache: [String: LinkedList<String, UIImage>.Node]
+    private let list: LinkedList<String, UIImage>
 
     init(limitCount: Int = 10,
-         memoryCache: NSCache<NSString, UIImage> = .init(),
-         diskCache: DiskCache = .default) {
+         diskCache: DiskCache? = .default) {
         self.limitCount = limitCount
-        self.memoryCache = memoryCache
         self.diskCache = diskCache
+
+        self.memoryCache = [String: LinkedList<String, UIImage>.Node](minimumCapacity: limitCount)
+        self.list = .init()
 
         NotificationCenter.default.addObserver(
             self,
@@ -36,61 +37,72 @@ final class LRUImageCache {
 
     @objc func didReceiveMemoryWarning(_ notification: Notification) {
         print("didReceiveMemoryWarning")
-        memoryCache.removeAllObjects()
-        cachedKeysInMemory.removeAll()
+
+        memoryCache.removeAll()
+        list.removeAll()
+        print("list:", list)
+        print("memoryCache:", memoryCache)
     }
 
     func image(forKey key: String) -> UIImage? {
+        print("-----------<", #function, ">---------------")
         guard let cachedKey = key.md5 else { return nil }
+        print("cachedKey:", cachedKey)
 
         var image: UIImage?
         concurrentQueue.sync {
-            if let cachedImage = self.memoryCache.object(forKey: cachedKey as NSString) {
-                image = cachedImage
-                self.updateCachedKeysInMemory(key: cachedKey)
-            } else if let data = self.diskCache.data(forKey: cachedKey),
+            if let node = self.memoryCache[cachedKey] {
+                print("node:", node)
+                image = node.value
+                list.remove(node)
+                list.addToHead(node)
+            } else if let data = diskCache?.get(forKey: cachedKey),
                 let cachedImage = UIImage(data: data) {
+                print("cachedImage:", cachedImage)
                 image = cachedImage
-                self.store(image: cachedImage, forKey: key)
+                store(image: cachedImage, forKey: key)
             }
         }
+        print("list:", list)
+        print("memoryCache:", memoryCache)
         return image
     }
 
     func store(image: UIImage, forKey key: String) {
+        print("-----------<", #function, ">---------------")
         guard let cachedKey = key.md5 else { return }
-        print("oooooooo >>>>>>>>", cachedKey)
+        print("cachedKey:", cachedKey)
 
         concurrentQueue.async(flags: .barrier) {
-            if let _ = self.memoryCache.object(forKey: cachedKey as NSString) {
-                self.updateCachedKeysInMemory(key: cachedKey)
+            if let node = self.memoryCache[cachedKey] {
+                print("node:", node)
+                node.value = image
+                self.list.remove(node)
+                self.list.addToHead(node)
+                print("list:", self.list)
                 return
             }
 
-            if self.cachedKeysInMemory.count >= self.limitCount {
-                let lastKey = self.cachedKeysInMemory.removeLast()
-                print("rrrrrrrrr >>>>>>>>", lastKey)
-                if let lastImage = self.memoryCache.object(forKey: lastKey as NSString) {
-                    if let data = lastImage.pngData() {
-                        self.diskCache.setData(data, forKey: lastKey)
-                    } else if let data = lastImage.jpegData(compressionQuality: 1.0) {
-                        self.diskCache.setData(data, forKey: lastKey)
+            if self.memoryCache.count >= self.limitCount {
+                if let node = self.list.tail {
+                    print("node:", node)
+                    let lastImage = node.value
+                    self.memoryCache.removeValue(forKey: node.key)
+                    self.list.remove(node)
+                    if let diskCache = self.diskCache {
+                        if let data = lastImage.pngData() {
+                            diskCache.set(data, forKey: node.key)
+                        } else if let data = lastImage.jpegData(compressionQuality: 1.0) {
+                            diskCache.set(data, forKey: node.key)
+                        }
                     }
                 }
-                self.memoryCache.removeObject(forKey: lastKey as NSString)
             }
-
-            self.memoryCache.setObject(image, forKey: cachedKey as NSString)
-            self.cachedKeysInMemory.insert(cachedKey, at: 0)
-            print("ttttttttt >>>>>>>", self.cachedKeysInMemory)
+            let node = self.list.createNode(key: cachedKey, value: image)
+            self.memoryCache[cachedKey] = node
+            self.list.addToHead(node)
+            print("list:", self.list)
+            print("memoryCache:", self.memoryCache)
         }
-    }
-
-    private func updateCachedKeysInMemory(key: String) {
-        if let index = cachedKeysInMemory.firstIndex(of: key) {
-            cachedKeysInMemory.remove(at: index)
-        }
-        cachedKeysInMemory.insert(key, at: 0)
-        print("vvvvvvv >>>>>>>", cachedKeysInMemory)
     }
 }
