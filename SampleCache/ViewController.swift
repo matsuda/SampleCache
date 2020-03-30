@@ -44,8 +44,8 @@ final class ViewController: UIViewController {
 
 extension ViewController {
     func fetchImage(with urlString: String) {
-        print("-----------<", #function, ">---------------")
-        print("urlString:", urlString)
+//        print("-----------<", #function, ">---------------")
+//        print("urlString:", urlString)
         DispatchQueue.global().async { [weak self] in
             if let image = self?.cache.image(forKey: urlString) {
                 DispatchQueue.main.async {
@@ -58,10 +58,10 @@ extension ViewController {
     }
 
     func requestImage(with urlString: String) {
-        print("-----------<", #function, ">---------------")
+//        print("-----------<", #function, ">---------------")
         let url = URL(string: urlString)!
         URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
-            print("response.url:", response?.url as Any)
+//            print("response.url:", response?.url as Any)
             guard error == nil else { return }
             guard let data = data else { return }
             guard let image = UIImage(data: data) else { return }

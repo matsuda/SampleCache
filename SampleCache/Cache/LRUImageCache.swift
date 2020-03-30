@@ -40,52 +40,59 @@ final class LRUImageCache {
 
         memoryCache.removeAll()
         list.removeAll()
+        #if DEBUG
         print("list:", list)
         print("memoryCache:", memoryCache)
+        #endif
     }
 
     func image(forKey key: String) -> UIImage? {
-        print("-----------<", #function, ">---------------")
+        // print("-----------<", #function, ">---------------")
         guard let cachedKey = key.md5 else { return nil }
-        print("cachedKey:", cachedKey)
+        // print("cachedKey:", cachedKey)
 
         var image: UIImage?
         concurrentQueue.sync {
             if let node = self.memoryCache[cachedKey] {
-                print("node:", node)
+                // print("node:", node)
                 image = node.value
                 list.remove(node)
                 list.addToHead(node)
             } else if let data = diskCache?.get(forKey: cachedKey),
                 let cachedImage = UIImage(data: data) {
-                print("cachedImage:", cachedImage)
+                // print("cachedImage:", cachedImage)
                 image = cachedImage
                 store(image: cachedImage, forKey: key)
             }
+            #if DEBUG
+            print("list:", list)
+            print("memoryCache:", memoryCache)
+            #endif
         }
-        print("list:", list)
-        print("memoryCache:", memoryCache)
         return image
     }
 
     func store(image: UIImage, forKey key: String) {
-        print("-----------<", #function, ">---------------")
+        // print("-----------<", #function, ">---------------")
         guard let cachedKey = key.md5 else { return }
-        print("cachedKey:", cachedKey)
+        // print("cachedKey:", cachedKey)
 
         concurrentQueue.async(flags: .barrier) {
             if let node = self.memoryCache[cachedKey] {
-                print("node:", node)
+                // print("node:", node)
                 node.value = image
                 self.list.remove(node)
                 self.list.addToHead(node)
+                #if DEBUG
                 print("list:", self.list)
+                print("memoryCache:", self.memoryCache)
+                #endif
                 return
             }
 
             if self.memoryCache.count >= self.limitCount {
                 if let node = self.list.tail {
-                    print("node:", node)
+                    // print("node:", node)
                     let lastImage = node.value
                     self.memoryCache.removeValue(forKey: node.key)
                     self.list.remove(node)
@@ -101,8 +108,10 @@ final class LRUImageCache {
             let node = self.list.createNode(key: cachedKey, value: image)
             self.memoryCache[cachedKey] = node
             self.list.addToHead(node)
+            #if DEBUG
             print("list:", self.list)
             print("memoryCache:", self.memoryCache)
+            #endif
         }
     }
 }
