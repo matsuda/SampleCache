@@ -19,6 +19,11 @@ final class ViewController: UIViewController {
         "https://folio-sec.com/images/investmentTips/01-bg.png",
         "https://folio-sec.com/images/investmentTips/02-bg.png",
         "https://folio-sec.com/images/investmentTips/03-bg.png",
+        "https://folio-sec.com/images/theme/themeBoard/casino.jpg",
+        "https://folio-sec.com/images/theme/themeBoard/tourism.jpg",
+        "https://folio-sec.com/images/theme/themeBoard/drone.jpg",
+        "https://folio-sec.com/images/theme/themeBoard/kids.jpg",
+        "https://folio-sec.com/images/theme/themeBoard/anti-aging.jpg",
     ]
     private lazy var cache: LRUImageCache = self.prepareImageCache()
 
@@ -76,6 +81,6 @@ extension ViewController {
 
 extension ViewController {
     private func prepareImageCache() -> LRUImageCache {
-        return LRUImageCache(limitCount: 3)
+        return LRUImageCache(limitCount: 10)
     }
 }
